@@ -151,35 +151,35 @@ class Estrella {
     // Posición aleatoria en todo el espacio
     reiniciar();
     
-    // Tamaño aleatorio - ahora más grande
-    tamaño = random(2, 6);  // Aumentado de 1-3 a 2-6 píxeles
+    // Tamaño aleatorio - considerablemente más grande
+    tamaño = random(3, 8);  // Aumentado de 2-6 a 3-8 píxeles
     
-    // Determinar si es una estrella brillante especial (10% de probabilidad)
-    estrellaBrillante = random(1) < 0.1;
+    // Determinar si es una estrella brillante especial (ahora 25% de probabilidad)
+    estrellaBrillante = random(1) < 0.25;  // Aumentado de 10% a 25%
     
     // Si es brillante, hacerla más grande
     if (estrellaBrillante) {
-      tamaño *= 1.5;
+      tamaño *= 2.0;  // Factor de escala mayor (antes 1.5)
     }
     
-    // Determinar el color base (predominan los claros para las estrellas)
+    // Determinar el color base con mayor tendencia a colores brillantes
     float seleccionTipo = random(1);
-    if (seleccionTipo < 0.5) {
-      // 50% estrellas blancas/plateadas (texto) - Aumentado de 70% a 50%
-      colorEstrella = colores.obtenerTexto(100); // Blanco puro para mejor visibilidad
-    } else if (seleccionTipo < 0.8) {
-      // 30% estrellas azuladas (primario) - Aumentado de 20% a 30%
-      colorEstrella = colores.obtenerPrimario(300); // Color más brillante sin alteración
+    if (seleccionTipo < 0.6) {  // Aumentado a 60% (antes 50%)
+      // 60% estrellas blancas/plateadas (texto blanco puro)
+      colorEstrella = color(255, 255, 255);  // Blanco puro definido directamente
+    } else if (seleccionTipo < 0.85) {  // Aumentado a 25% (antes 30%)
+      // 25% estrellas azuladas brillantes
+      colorEstrella = color(175, 255, 255);  // Cian brillante
     } else {
-      // 20% estrellas cálidas (acento) - Aumentado de 10% a 20%
-      colorEstrella = colores.obtenerAcento(200); // Color cálido sin alteración
+      // 15% estrellas cálidas intensas (antes 20%)
+      colorEstrella = color(255, 220, 180);  // Naranja claro brillante
     }
     
     // Velocidad propia para efecto de paralaje
     velocidadPropia = random(0.2, 1.0);
     
-    // Brillo inicial más alto para mejor visibilidad
-    brillo = random(180, 255); // Aumentado de 100-255 a 180-255
+    // Brillo inicial siempre alto
+    brillo = random(220, 255);  // Valor mínimo aumentado a 220 (antes 180)
   }
   
   /**
@@ -196,11 +196,11 @@ class Estrella {
     }
     
     // Efecto de parpadeo más frecuente y pronunciado
-    if (estrellaBrillante || random(1) > 0.95) { // Más probabilidad de parpadeo (antes 0.97)
-      brillo = random(200, 255); // Brillo más intenso (antes 150-255)
+    if (estrellaBrillante || random(1) > 0.90) {  // Más probabilidad de parpadeo (antes 0.95)
+      brillo = 255;  // Brillo máximo siempre
     } else {
-      // Suavizar el brillo pero manteniéndolo alto
-      brillo = lerp(brillo, 220, 0.05); // Valor base más alto (antes 200)
+      // Mantener brillo alto incluso al reducir
+      brillo = lerp(brillo, 230, 0.1);  // Base y velocidad de transición aumentadas
     }
   }
   
@@ -211,32 +211,52 @@ class Estrella {
     pushMatrix();
     translate(posicion.x, posicion.y, posicion.z);
     
-    // Sin borde para estrellas normales
-    noStroke();
+    // Deshabilitar test de profundidad temporalmente para asegurar visibilidad
+    hint(DISABLE_DEPTH_TEST);
     
-    // Color con brillo variable
-    fill(colores.conTransparencia(colorEstrella, brillo));
+    // Primer paso: dibujar un punto blanco brillante en el centro
+    stroke(255, brillo);  // Contorno blanco puro
+    strokeWeight(1);
+    point(0, 0);
+    
+    // Color con brillo variable para el círculo principal
+    noStroke();
+    fill(red(colorEstrella), green(colorEstrella), blue(colorEstrella), brillo);
     
     // Dibujar como punto brillante
     circle(0, 0, tamaño);
     
-    // Efecto de resplandor para estrellas brillantes
+    // Efecto de resplandor para todas las estrellas
+    // Primer halo (todas las estrellas)
+    fill(red(colorEstrella), green(colorEstrella), blue(colorEstrella), brillo * 0.6);  // Mayor opacidad
+    circle(0, 0, tamaño * 1.5);
+    
+    // Efectos adicionales para estrellas brillantes
     if (estrellaBrillante) {
-      // Primer halo
-      fill(colores.conTransparencia(colorEstrella, brillo * 0.5));
-      circle(0, 0, tamaño * 2);
-      
-      // Segundo halo más tenue
-      fill(colores.conTransparencia(colorEstrella, brillo * 0.3));
+      // Halo exterior más grande
+      fill(red(colorEstrella), green(colorEstrella), blue(colorEstrella), brillo * 0.4);
       circle(0, 0, tamaño * 3);
       
-      // Rayos de luz en forma de cruz
-      stroke(colores.conTransparencia(colorEstrella, brillo * 0.7));
-      strokeWeight(0.8);
-      float rayoLongitud = tamaño * 2;
+      // Halo exterior adicional muy sutil
+      fill(red(colorEstrella), green(colorEstrella), blue(colorEstrella), brillo * 0.2);
+      circle(0, 0, tamaño * 5);
+      
+      // Rayos de luz en forma de cruz más visibles
+      stroke(red(colorEstrella), green(colorEstrella), blue(colorEstrella), brillo * 0.8);
+      strokeWeight(1.2);  // Más grosor
+      float rayoLongitud = tamaño * 3;  // Rayos más largos
       line(-rayoLongitud, 0, rayoLongitud, 0); // Horizontal
       line(0, -rayoLongitud, 0, rayoLongitud); // Vertical
+      
+      // Rayos diagonales adicionales
+      strokeWeight(0.8);  // Más finos
+      float rayoDiagonal = rayoLongitud * 0.7;
+      line(-rayoDiagonal, -rayoDiagonal, rayoDiagonal, rayoDiagonal); // Diagonal \
+      line(-rayoDiagonal, rayoDiagonal, rayoDiagonal, -rayoDiagonal); // Diagonal /
     }
+    
+    // Restaurar test de profundidad
+    hint(ENABLE_DEPTH_TEST);
     
     popMatrix();
   }
@@ -245,10 +265,10 @@ class Estrella {
    * Reinicia la estrella a una posición aleatoria lejana
    */
   void reiniciar() {
-    // Distribución más concentrada para mayor densidad visual
-    float x = random(-width * 0.8, width * 1.8); // Reducido de -width,width*2
-    float y = random(-height * 0.8, height * 1.8); // Reducido para más densidad
-    float z = random(-2000, -200);
+    // Distribución más concentrada en el área visible
+    float x = random(-width * 0.5, width * 1.5);  // Más centrado en la pantalla
+    float y = random(-height * 0.5, height * 1.5); // Más centrado en la pantalla
+    float z = random(-1500, -200);  // Profundidad ajustada para mayor visibilidad
     posicion = new PVector(x, y, z);
   }
 }
