@@ -23,7 +23,7 @@ GestorColores colores;   // Gestor de la paleta de colores (compartido globalmen
 
 // Configuración inicial
 void setup() {
-  size(700, 1000, P3D);  // Usamos P3D para mejor rendimiento con muchos objetos
+  size(1080/2, 1920/2, P3D);  // Usamos P3D para mejor rendimiento con muchos objetos
   smooth(4);            // Antialiasing para mejor calidad visual
   frameRate(60);        // Intentamos mantener 60fps
   
